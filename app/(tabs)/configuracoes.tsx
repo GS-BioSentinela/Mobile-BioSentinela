@@ -14,6 +14,12 @@ export default function Configuracoes() {
     router.replace('/');
   };
 
+  const excluir = async () => {
+    await AsyncStorage.clear();
+    Alert.alert('Conta excluida', 'Você foi desconectado')
+    router.replace('/')
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Configurações</Text>
@@ -50,6 +56,10 @@ export default function Configuracoes() {
 
       <TouchableOpacity style={styles.botaoSair} onPress={sair}>
         <Text style={styles.textoBotaoSair}>Sair</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.botaoSair} onPress={excluir}>
+        <Text style={styles.textoBotaoSair}>Excluir conta</Text>
       </TouchableOpacity>
     </View>
   );

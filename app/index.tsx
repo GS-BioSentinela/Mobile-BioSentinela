@@ -4,12 +4,13 @@ import { autenticar } from './utils/storage';
 import { router } from 'expo-router';
 
 export default function Login() {
+  const [email, setEmail] = useState('');
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
 
   const login = async () => {
     try {
-      await autenticar(usuario, senha);
+      await autenticar( usuario, senha);
       Alert.alert('Sucesso', 'Login efetuado com sucesso!');
       router.replace('alerta');
     } catch (err: any) {
@@ -22,9 +23,9 @@ export default function Login() {
     <View style={styles.container}>
         <Image source={require('../assets/BioSentinela_s_fundo.png')} style={styles.image} />
       
-
+        
         <TextInput
-            placeholder="Usuário"
+            placeholder="Usuário "
             value={usuario}
             onChangeText={setUsuario}
             style={styles.input}
@@ -42,9 +43,9 @@ export default function Login() {
             <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={() => router.push('/register')}>
+        <TouchableOpacity onPress={() => router.push('/register')}>
           <Text style={styles.buttonText}>
-            Não tem conta? Cadastre-se
+            Não tem conta?  Cadastre-se
           </Text>
         </TouchableOpacity>
     </View>

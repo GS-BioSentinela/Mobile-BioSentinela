@@ -4,12 +4,13 @@ import { router } from 'expo-router';
 import { cadastrarUsuario } from './utils/storage';
 
 export default function Register() {
+    const [email, setEmail] = useState('');
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
 
   const handleRegister = async () => {
     try {
-      await cadastrarUsuario({ usuario, senha });
+      await cadastrarUsuario({ email, usuario, senha });
       Alert.alert('Sucesso', 'Cadastro realizado!');
       router.replace('/'); // volta para o login
     } catch (err: any) {
@@ -20,6 +21,14 @@ export default function Register() {
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Cadastro</Text>
+
+      <TextInput
+          placeholder='email'
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+          placeholderTextColor="#999"
+        />
 
       <TextInput
         placeholder="Usuário"
