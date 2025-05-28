@@ -11,7 +11,7 @@ export default function Login() {
     try {
       await autenticar(usuario, senha);
       Alert.alert('Sucesso', 'Login efetuado com sucesso!');
-      router.replace('/');
+      router.replace('alerta');
     } catch (err: any) {
       Alert.alert('Erro', err.message || 'Erro ao fazer login');
     }
@@ -38,7 +38,7 @@ export default function Login() {
             style={styles.input}
             placeholderTextColor="#999"
         />
-        <TouchableOpacity style={styles.button} onPress={() => router.push('./(tabs)/alerta')}>
+        <TouchableOpacity style={styles.button} onPress={login}>
             <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 
