@@ -1,5 +1,5 @@
 import { View, Switch, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -8,17 +8,29 @@ export default function Configuracoes() {
   const [localizacao, setLocalizacao] = useState(true);
   const [temaEscuro, setTemaEscuro] = useState(false);
 
+  // Verifica se o usuário está logado
+  useEffect(() => {
+    const verificarLogin = async () => {
+      const token = await AsyncStorage.getItem('@token');
+      if (!token) {
+        Alert.alert('Sessão expirada', 'Faça login novamente.');
+        router.replace('/');
+      }
+    };
+    verificarLogin();
+  }, []);
+
   const sair = async () => {
-    await AsyncStorage.removeItem('token');
+    await AsyncStorage.removeItem('@token');
     Alert.alert('Sessão encerrada', 'Você foi desconectado.');
     router.replace('/');
   };
 
   const excluir = async () => {
     await AsyncStorage.clear();
-    Alert.alert('Conta excluida', 'Você foi desconectado')
-    router.replace('/')
-  }
+    Alert.alert('Conta excluída', 'Todos os dados foram apagados.');
+    router.replace('/');
+  };
 
   return (
     <View style={styles.container}>
@@ -58,8 +70,8 @@ export default function Configuracoes() {
         <Text style={styles.textoBotaoSair}>Sair</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.botaoSair} onPress={excluir}>
-        <Text style={styles.textoBotaoSair}>Excluir conta</Text>
+      <TouchableOpacity style={styles.botaoExcluir} onPress={excluir}>
+        <Text style={styles.textoBotaoExcluir}>Excluir conta</Text>
       </TouchableOpacity>
     </View>
   );
@@ -100,6 +112,18 @@ const styles = StyleSheet.create({
   },
   textoBotaoSair: {
     color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  botaoExcluir: {
+    marginTop: 12,
+    backgroundColor: '#FF6B6B',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  textoBotaoExcluir: {
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },

@@ -1,18 +1,89 @@
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { useEffect, useState } from 'react';
 import AlertaCard from '../components/AlertaCard';
+import api from '../utils/api';
 
-const dadosMock = [
-  { id: '1', local: 'Mata Atlântica', risco: 'Alto', hora: '12:30' },
-  { id: '2', local: 'Cerrado - DF', risco: 'Médio', hora: '13:00' },
-];
+type Alerta = {
+  tipo: string;
+  mensagem: string;
+  sensorId: number;
+};
+
+type Sensor = {
+  tipo: string;
+  localizacao: string;
+  regiaoId: number;
+};
+
+type Regiao = {
+  nome: string;
+  bioma: string;
+};
+
+type AlertaExpandido = {
+  tipo: string;
+  mensagem: string;
+  localizacao: string;
+  regiao: string;
+  bioma: string;
+};
 
 export default function Alertas() {
+  const [alertas, setAlertas] = useState<AlertaExpandido[]>([]);
+  const [carregando, setCarregando] = useState(true);
+
+  useEffect(() => {
+    async function carregarDados() {
+      try {
+        const [alertasRes, sensoresRes, regioesRes] = await Promise.all([
+          api.get('/alertas'),
+          api.get('/sensores'),
+          api.get('/regiao'),
+        ]);
+
+        const alertas: Alerta[] = alertasRes.data;
+        const sensores: Sensor[] = sensoresRes.data;
+        const regioes: Regiao[] = regioesRes.data;
+
+        const dadosCompletos: AlertaExpandido[] = alertas.map(alerta => {
+          const sensor = sensores[alerta.sensorId];
+          const regiao = regioes[sensor?.regiaoId];
+
+          return {
+            tipo: alerta.tipo,
+            mensagem: alerta.mensagem,
+            localizacao: sensor?.localizacao || 'Desconhecida',
+            regiao: regiao?.nome || 'Região desconhecida',
+            bioma: regiao?.bioma || 'Bioma desconhecido',
+          };
+        });
+
+        setAlertas(dadosCompletos);
+      } catch (error) {
+        Alert.alert('Erro', 'Não foi possível carregar os dados.');
+        console.error(error);
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    carregarDados();
+  }, []);
+
+  if (carregando) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#0B6E4F" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Alertas Ativos</Text>
       <FlatList
-        data={dadosMock}
-        keyExtractor={item => item.id}
+        data={alertas}
+        keyExtractor={(_, index) => index.toString()}
         renderItem={({ item }) => <AlertaCard {...item} />}
         contentContainerStyle={styles.lista}
       />

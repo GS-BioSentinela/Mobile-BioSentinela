@@ -1,16 +1,15 @@
 import { View, TextInput, Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { router } from 'expo-router';
-import { cadastrarUsuario } from './utils/storage';
+import { cadastrarUsuario } from './utils/auth'; // <== novo caminho
 
 export default function Register() {
-    const [email, setEmail] = useState('');
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
 
   const handleRegister = async () => {
     try {
-      await cadastrarUsuario({ email, usuario, senha });
+      await cadastrarUsuario(usuario, senha);
       Alert.alert('Sucesso', 'Cadastro realizado!');
       router.replace('/'); // volta para o login
     } catch (err: any) {
@@ -21,14 +20,6 @@ export default function Register() {
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Cadastro</Text>
-
-      <TextInput
-          placeholder='email'
-          value={email}
-          onChangeText={setEmail}
-          style={styles.input}
-          placeholderTextColor="#999"
-        />
 
       <TextInput
         placeholder="Usuário"
